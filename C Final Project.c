@@ -46,28 +46,28 @@ const int DENDA_PER_HARI = 500;
 
 //fungsi menambah buku ke linked list (admin)
 void tambahBuku(){
-   buku* buku = (buku*)malloc(sizeof(buku));
+   Buku* buku = (Buku*)malloc(sizeof(Buku));
    printf("masukkan ID buku: ");
-   scanf("d%", &buku->ID);
+   scanf("%d", &buku->id);
    getchar(); 
    printf("masukkan judul buku: ");
-   fgets(buku->judul, MAX_JUDUL, stdin);
+   fgets(buku->judul,sizeof(buku->judul), stdin);
    buku->judul[strcspn(buku->judul, "\n")] = 0;
    printf("masukkan pengarang buku: ");
-   fgets(buku->pengarang, MAX_PENGARANG, stdin);
+   fgets(buku->pengarang,sizeof(buku->pengarang), stdin);
    buku->pengarang[strcspn(buku->pengarang, "\n")] = 0;
    buku->next = NULL;
 
    if(head = NULL){
       head = buku;
    }else {
-        buku* temp = head;
+        Buku* temp = head;
         while (temp->next != NULL){
               temp = temp->next;
          }
          temp->next = buku;
    }
-   printf("buku berhasil ditambahkan!n\");
+   printf("buku berhasil ditambahkan!\n");
   }
 
 //fungsi menampilkan daftar buku 
@@ -78,7 +78,7 @@ void tampilkanBuku(){
       }
 
       printf("\nDaftar buku:\n");
-      buku* temp = head;
+      Buku* temp = head;
       while (temp != NULL){
             printf("ID: %d, Judul: %s, Pengarang: %s\n", temp->id,temp->judul, temp->pengarang);
             temp = temp ->next;
@@ -87,9 +87,9 @@ void tampilkanBuku(){
 
 //fungsi mencari  buku
 buku* cariBuku(int ID){
-      buku* temp = head;
+      Buku* temp = head;
       while(temp != NULL){
-          if (temp->ID =ID){
+          if (temp->id =ID){
               return;
           }
           temp = temp->next;
