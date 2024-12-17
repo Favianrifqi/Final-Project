@@ -96,3 +96,26 @@ buku* cariBuku(int ID){
       }
       return NULL;
 }
+
+// Fungsi untuk menghapus buku dari Linked List
+void hapusBuku(int id) {
+    if (head == NULL) return;
+
+    if (head->id == id) {
+        Buku* temp = head;
+        head = head->next;
+        free(temp);
+        return;
+    }
+
+    Buku* temp = head;
+    while (temp->next != NULL && temp->next->id != id) {
+        temp = temp->next;
+    }
+
+    if (temp->next != NULL) {
+        Buku* toDelete = temp->next;
+        temp->next = temp->next->next;
+        free(toDelete);
+    }
+}
