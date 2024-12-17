@@ -120,6 +120,56 @@ void hapusBuku(int id) {
     }
 }
 
+// Fungsi peminjaman buku
+void pinjamBuku() {
+    int idBuku, hariPeminjaman;
+    printf("Masukkan ID buku yang ingin dipinjam: ");
+    scanf("%d", &idBuku);
+    getchar();
+    
+    Buku* buku = cariBuku(idBuku);
+    if (buku == NULL) {
+        printf("Buku dengan ID %d tidak ditemukan.\n", idBuku);
+        return;
+    }
+
+    printf("Masukkan jumlah hari peminjaman: ");
+    scanf("%d", &hariPeminjaman);
+    getchar();
+
+    enqueue(&antreanPeminjaman, idBuku, hariPeminjaman);
+    hapusBuku(idBuku); 
+    printf("Buku dengan ID %d berhasil dipinjam.\n", idBuku);
+}
+
+// Fungsi pengembalian buku dengan aturan denda
+void kembalikanBuku() {
+    int idBuku, hariPinjam;
+    printf("Masukkan ID buku yang dikembalikan: ");
+    scanf("%d", &idBuku);
+    getchar();
+
+    printf("Masukkan jumlah hari peminjaman: ");
+    scanf("%d", &hariPinjam);
+    getchar();
+
+    if (hariPinjam > 7) {
+        int hariTerlambat = hariPinjam - 7;
+        int denda = hariTerlambat * 5000; 
+        printf("Anda terlambat mengembalikan buku selama %d hari.\n", hariTerlambat);
+        printf("Denda yang harus dibayar adalah Rp%d.\n", denda);
+    } else {
+        printf("Buku dikembalikan tepat waktu. Tidak ada denda.\n");
+    }
+
+    StackNode* newNode = (StackNode*)malloc(sizeof(StackNode));
+    newNode->idBuku = idBuku;
+    newNode->next = stackBuku;
+    stackBuku = newNode;
+
+    printf("Buku dengan ID %d berhasil dikembalikan.\n", idBuku);
+}
+
 // Fungsi untuk menambah elemen ke queue
 void enqueue(Queue* q, int idBuku, int hariPeminjaman) {
     QueueNode* newNode = (QueueNode*)malloc(sizeof(QueueNode));
