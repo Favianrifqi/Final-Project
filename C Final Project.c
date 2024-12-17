@@ -219,7 +219,7 @@ void lihatStackBuku() {
 // Fungsi untuk menampilkan menu admin
 void menuAdmin() {
     int pilihan;
-    do (
+    do {
         printf("\n=== Menu Admin ===\n");
         printf("1. Tambah Buku\n");
         printf("2. Tampilkan Buku\n");
@@ -244,7 +244,7 @@ void menuAdmin() {
                 break;
             }
             case 4:
-                printf("Keluar dari menu Admin.\n);
+                printf("Keluar dari menu Admin.\n");
                 break;
             default:
                 printf("Pilihan tidak valid.\n");
@@ -269,12 +269,12 @@ void menuUser(Pengguna* pengguna) {
                 break;
             case 2:
                 kembalikanBuku(pengguna);
-                break:
-            case 3: 
-                tampilkanBuku()
+                break;
+            case 3:
+                tampilkanBuku();
                 break;
             case 4:
-                printf("Keluar dari menu User.\n);
+                printf("Keluar dari menu User.\n");
                 break;
             default:
                 printf("Pilihan tidak valid.\n");
@@ -283,7 +283,7 @@ void menuUser(Pengguna* pengguna) {
 }
 
 int main() {
-    Pengguna pengguna = ("", -1, 0);
+    Pengguna pengguna = {"", -1, 0};
     int pilihan;
 
     printf("Selamar datang di sistem perpustakaan!\n");
@@ -292,7 +292,7 @@ int main() {
     fgets(pengguna.nama, 100, stdin);
     pengguna.nama[strcspn(pengguna.nama, "\n")] = '\0';
 
-    do (
+    do {
         printf("\n=== Menu Utama ===\n");
         printf("1. Admin\n");
         printf("2. User\n");
@@ -315,5 +315,5 @@ int main() {
         }
     } while (pilihan != 3);
 
-    return 0;
+    return 0;
 }
