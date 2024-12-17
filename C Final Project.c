@@ -86,7 +86,7 @@ void tampilkanBuku(){
    }
 
 //fungsi mencari  buku
-buku* cariBuku(int ID){
+Buku* cariBuku(int ID){
       Buku* temp = head;
       while(temp != NULL){
           if (temp->id =ID){
@@ -314,6 +314,5 @@ int main() {
                 printf("Pilihan tidak valid.\n");
         }
     } while (pilihan != 3);
-
-    return 0;
+return 0;
 }
