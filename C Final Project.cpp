@@ -119,3 +119,18 @@ void hapusBuku(int id) {
         free(toDelete);
     }
 }
+
+// Fungsi untuk menambah elemen ke queue
+void enqueue(Queue* q, int idBuku, int hariPeminjaman) {
+    QueueNode* newNode = (QueueNode*)malloc(sizeof(QueueNode));
+    newNode->idBuku = idBuku;
+    newNode->hariPeminjaman = hariPeminjaman;
+    newNode->next = NULL;
+
+    if (q->rear == NULL) {
+        q->front = q->rear = newNode;
+    } else {
+        q->rear->next = newNode;
+        q->rear = newNode;
+    }
+}
