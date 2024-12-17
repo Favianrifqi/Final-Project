@@ -2,6 +2,48 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+// Struktur data untuk node buku (Linked List)
+typedef struct Buku {
+    int id;
+    char judul[100];
+    char pengarang[100];
+    struct Buku* next;
+} Buku;
+
+// Struktur data untuk pengguna
+typedef struct Pengguna {
+    char nama[100];
+    int idPeminjaman; 
+    int hariPeminjaman; 
+} Pengguna;
+
+// Node untuk queue
+typedef struct QueueNode {
+    int idBuku;
+    int hariPeminjaman;
+    struct QueueNode* next;
+} QueueNode;
+
+// Struktur untuk Queue
+typedef struct {
+    QueueNode* front;
+    QueueNode* rear;
+} Queue;
+
+// Struktur untuk Stack
+typedef struct StackNode {
+    int idBuku;
+    struct StackNode* next;
+} StackNode;
+
+// Variabel global
+Buku* head = NULL;                 
+Queue antreanPeminjaman = {NULL, NULL}; 
+StackNode* stackBuku = NULL;       
+const int DENDA_PER_HARI = 500;    
+
+
 //fungsi menambah buku ke linked list (admin)
 void tambahBuku(){
    buku* buku = (buku*)malloc(sizeof(buku));
