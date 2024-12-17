@@ -215,3 +215,105 @@ void lihatStackBuku() {
         temp = temp->next;
     }
 }
+
+// Fungsi untuk menampilkan menu admin
+void menuAdmin() {
+    int pilihan;
+    do (
+        printf("\n=== Menu Admin ===\n");
+        printf("1. Tambah Buku\n");
+        printf("2. Tampilkan Buku\n");
+        printf("3. Hapus Buku\n");
+        printf("4. Keluar\n");
+        printf("Pilih menu: ");
+        scanf("%d", &pilihan);
+
+        switch (pilihan){
+            case 1:
+                tambahBuku();
+                break;
+            case 2:
+                tampilkanBuku();
+                break;
+            case 3: {
+                int id;
+                printf("Masukkan ID buku yang akan dihapus: ");
+                scanf("%d", &id);
+                hapusBuku(id);
+                printf("Buku berhasil dihapus\n");
+                break;
+            }
+            case 4:
+                printf("Keluar dari menu Admin.\n);
+                break;
+            default:
+                printf("Pilihan tidak valid.\n");
+        }
+    } while (pilihan !=4);
+}
+
+void menuUser(Pengguna* pengguna) {
+    int pilihan;
+    do {
+        printf("\n=== Menu User ===\n");
+        printf("1. Pinjam Buku\n");
+        printf("2. Kembalikan Buku\n");
+        printf("3. Tampilkan Buku\n");
+        printf("4. Keluar\n");
+        printf("Pilih menu: ");
+        scanf("%d", &pilihan);
+
+    switch (pilihan) {
+        case 1:
+                pinjamBuku(pengguna);
+                break;
+            case 2:
+                kembalikanBuku(pengguna);
+                break:
+            case 3: 
+                tampilkanBuku()
+                break;
+            case 4:
+                printf("Keluar dari menu User.\n);
+                break;
+            default:
+                printf("Pilihan tidak valid.\n");
+        }
+    } while (pilihan !=4);
+}
+
+int main() {
+    Pengguna pengguna = ("", -1, 0);
+    int pilihan;
+
+    printf("Selamar datang di sistem perpustakaan!\n");
+    printf("Masukkan nama anda: ");
+    getchar();
+    fgets(pengguna.nama, 100, stdin);
+    pengguna.nama[strcspn(pengguna.nama, "\n")] = '\0';
+
+    do (
+        printf("\n=== Menu Utama ===\n");
+        printf("1. Admin\n");
+        printf("2. User\n");
+        printf("3. Keluar\n");
+        printf("Pilih menu: ");
+        scanf("%d", &pilihan);
+
+        switch (pilihan) {
+            case 1:
+                menuAdmin();
+                break;
+            case 2:
+                menuUser(&pengguna);
+                break;
+            case 3:
+                printf("Keluar dari sistem. Terima kasih!\n");
+                break;
+            default:
+                printf("Pilihan tidak valid.\n");
+        }
+    } while (pilihan != 3);
+
+    return 0;
+}
