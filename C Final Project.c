@@ -184,3 +184,34 @@ void enqueue(Queue* q, int idBuku, int hariPeminjaman) {
         q->rear = newNode;
     }
 }
+
+
+// Fungsi menampilkan antrean peminjaman
+void lihatAntreanPeminjaman() {
+    if (antreanPeminjaman.front == NULL) {
+        printf("Antrean peminjaman kosong.\n");
+        return;
+    }
+
+    printf("\nAntrean Peminjaman:\n");
+    QueueNode* temp = antreanPeminjaman.front;
+    while (temp != NULL) {
+        printf("ID Buku: %d, Hari Peminjaman: %d\n", temp->idBuku, temp->hariPeminjaman);
+        temp = temp->next;
+    }
+}
+
+// Fungsi untuk melihat stack buku
+void lihatStackBuku() {
+    if (stackBuku == NULL) {
+        printf("Stack buku kosong.\n");
+        return;
+    }
+
+    printf("\nStack Buku:\n");
+    StackNode* temp = stackBuku;
+    while (temp != NULL) {
+        printf("ID Buku: %d\n", temp->idBuku);
+        temp = temp->next;
+    }
+}
