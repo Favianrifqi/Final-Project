@@ -224,7 +224,9 @@ void menuAdmin() {
         printf("1. Tambah Buku\n");
         printf("2. Tampilkan Buku\n");
         printf("3. Hapus Buku\n");
-        printf("4. Keluar\n");
+        printf("4. Lihat Antrean Peminjaman\n");
+        printf("5. Lihat Stack Buku\n");
+        printf("6. Keluar\n");
         printf("Pilih menu: ");
         scanf("%d", &pilihan);
 
@@ -244,12 +246,18 @@ void menuAdmin() {
                 break;
             }
             case 4:
+                lihatAntreanPeminjaman();
+                break;
+            case 5:
+                lihatStackBuku();
+                break;
+            case 6:
                 printf("Keluar dari menu Admin.\n");
                 break;
             default:
                 printf("Pilihan tidak valid.\n");
         }
-    } while (pilihan !=4);
+    } while (pilihan != 6);
 }
 
 void menuUser(Pengguna* pengguna) {
