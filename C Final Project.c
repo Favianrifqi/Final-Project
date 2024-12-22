@@ -1,22 +1,21 @@
+// Sistem Perpustakaan Menggunakan Linked List, Queue, dan Stack
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
 // Struktur data untuk node buku (Linked List)
 typedef struct Buku {
-int id;
-char judul[100];
-char pengarang[100];
+    int id;
+    char judul[100];
+    char pengarang[100];
     int stok; // Tambahan untuk menyimpan stok buku
-struct Buku* next;
+    struct Buku* next;
 } Buku;
 
 // Struktur data untuk pengguna
 typedef struct Pengguna {
-char nama[100];
-    int idPeminjaman; 
-    int hariPeminjaman; 
+    char nama[100];
     int idPeminjaman; // ID buku yang sedang dipinjam (jika ada)
     int hariPeminjaman; // Hari peminjaman buku
     struct Pengguna* next;
@@ -25,42 +24,26 @@ char nama[100];
 // Node untuk queue
 typedef struct QueueNode {
     char namaPengguna[100]; // Nama pengguna yang meminjam
-int idBuku;
-int hariPeminjaman;
-struct QueueNode* next;
-@@ -34,67 +38,45 @@ typedef struct {
+    int idBuku;
+    int hariPeminjaman;
+    struct QueueNode* next;
+} QueueNode;
+
+// Struktur untuk Queue
+typedef struct {
+    QueueNode* front;
+    QueueNode* rear;
+} Queue;
+
 // Struktur untuk Stack
 typedef struct StackNode {
-int idBuku;
+    int idBuku;
     char namaPengguna[100];
     char aktivitas[50];
-struct StackNode* next;
+    struct StackNode* next;
 } StackNode;
 
 // Variabel global
-Buku* head = NULL;                 
-Queue antreanPeminjaman = {NULL, NULL}; 
-StackNode* stackBuku = NULL;       
-const int DENDA_PER_HARI = 500;    
-
-
-//fungsi menambah buku ke linked list (admin)
-void tambahBuku(){
-   Buku* buku = (Buku*)malloc(sizeof(Buku));
-   printf("masukkan ID buku: ");
-   scanf("%d", &buku->id);
-   getchar(); 
-   printf("masukkan judul buku: ");
-   fgets(buku->judul,sizeof(buku->judul), stdin);
-   buku->judul[strcspn(buku->judul, "\n")] = 0;
-   printf("masukkan pengarang buku: ");
-   fgets(buku->pengarang,sizeof(buku->pengarang), stdin);
-   buku->pengarang[strcspn(buku->pengarang, "\n")] = 0;
-   buku->next = NULL;
-
-   if(head = NULL){
-      head = buku;
-   }else {
 Buku* head = NULL;                 // Head untuk Linked List buku
 Pengguna* penggunaHead = NULL;     // Head untuk daftar pengguna
 Queue antreanPeminjaman = {NULL, NULL}; // Queue untuk antrean peminjaman buku
@@ -74,10 +57,10 @@ void tambahBuku() {
     scanf("%d", &buku->id);
     getchar();
     printf("Masukkan judul buku: ");
-    fgets(buku->judul, 100, stdin);
+    fgets(buku->judul, sizeof(buku->judul), stdin);
     buku->judul[strcspn(buku->judul, "\n")] = '\0';
     printf("Masukkan pengarang buku: ");
-    fgets(buku->pengarang, 100, stdin);
+    fgets(buku->pengarang, sizeof(buku->pengarang), stdin);
     buku->pengarang[strcspn(buku->pengarang, "\n")] = '\0';
     printf("Masukkan stok buku: ");
     scanf("%d", &buku->stok);
@@ -86,40 +69,7 @@ void tambahBuku() {
     if (head == NULL) {
         head = buku;
     } else {
-Buku* temp = head;
-        while (temp->next != NULL){
-              temp = temp->next;
-         }
-         temp->next = buku;
-   }
-   printf("buku berhasil ditambahkan!\n");
-  }
-
-//fungsi menampilkan daftar buku 
-void tampilkanBuku(){
-      if (head = NULL){
-          printf("tidak ada buku dalam perpustakaan.\n");
-          return;
-      }
-
-      printf("\nDaftar buku:\n");
-      Buku* temp = head;
-      while (temp != NULL){
-            printf("ID: %d, Judul: %s, Pengarang: %s\n", temp->id,temp->judul, temp->pengarang);
-            temp = temp ->next;
-      }
-   }
-
-//fungsi mencari  buku
-Buku* cariBuku(int ID){
-      Buku* temp = head;
-      while(temp != NULL){
-          if (temp->id =ID){
-              return;
-          }
-          temp = temp->next;
-      }
-      return NULL;
+        Buku* temp = head;
         while (temp->next != NULL) {
             temp = temp->next;
         }
@@ -130,13 +80,27 @@ Buku* cariBuku(int ID){
 }
 
 // Fungsi untuk menghapus buku dari Linked List
-@@ -120,117 +102,314 @@ void hapusBuku(int id) {
-}
-}
+void hapusBuku(int id) {
+    if (head == NULL) return;
 
-// Fungsi peminjaman buku
-void pinjamBuku() {
-    int idBuku, hariPeminjaman;
+    if (head->id == id) {
+        Buku* temp = head;
+        head = head->next;
+        free(temp);
+        return;
+    }
+
+    Buku* temp = head;
+    while (temp->next != NULL && temp->next->id != id) {
+        temp = temp->next;
+    }
+
+    if (temp->next != NULL) {
+        Buku* toDelete = temp->next;
+        temp->next = temp->next->next;
+        free(toDelete);
+    }
+}
 
 // Fungsi untuk menampilkan daftar buku (Linked List)
 void tampilkanBuku() {
@@ -153,6 +117,7 @@ void tampilkanBuku() {
     }
 }
 
+// Fungsi untuk mencari buku berdasarkan ID
 Buku* cariBuku(int id) {
     Buku* temp = head;
     while (temp != NULL) {
@@ -165,10 +130,11 @@ Buku* cariBuku(int id) {
 }
 
 // Fungsi untuk menambah elemen ke queue
-void enqueue(Queue* q, int idBuku, int hariPeminjaman) {
+void enqueue(Queue* q, int idBuku, int hariPeminjaman, const char* namaPengguna) {
     QueueNode* newNode = (QueueNode*)malloc(sizeof(QueueNode));
     newNode->idBuku = idBuku;
     newNode->hariPeminjaman = hariPeminjaman;
+    strcpy(newNode->namaPengguna, namaPengguna);
     newNode->next = NULL;
 
     if (q->rear == NULL) {
@@ -188,23 +154,6 @@ void dequeue(Queue* q) {
     if (q->front == NULL) {
         q->rear = NULL;
     }
-    free(temp);
-}
-
-// Fungsi untuk menambah elemen ke stack
-void push(StackNode** top, int idBuku) {
-    StackNode* newNode = (StackNode*)malloc(sizeof(StackNode));
-    newNode->idBuku = idBuku;
-    newNode->next = *top;
-    *top = newNode;
-}
-
-// Fungsi untuk menghapus elemen dari stack
-void pop(StackNode** top) {
-    if (*top == NULL) return;
-
-    StackNode* temp = *top;
-    *top = (*top)->next;
     free(temp);
 }
 
@@ -244,7 +193,7 @@ void lihatPeminjam() {
     }
 }
 
-// Fungsi untuk meminjam buku (User)
+// Fungsi untuk meminjam buku (User )
 void pinjamBuku(Pengguna* pengguna) {
     if (pengguna->idPeminjaman != -1) {
         printf("Anda masih memiliki buku yang dipinjam. Kembalikan terlebih dahulu!\n");
@@ -252,34 +201,19 @@ void pinjamBuku(Pengguna* pengguna) {
     }
 
     int idBuku;
-printf("Masukkan ID buku yang ingin dipinjam: ");
-scanf("%d", &idBuku);
-    getchar();
-    
+    printf("Masukkan ID buku yang ingin dipinjam: ");
+    scanf("%d", &idBuku);
+
     Buku* buku = cariBuku(idBuku);
-    if (buku == NULL) {
-        printf("Buku dengan ID %d tidak ditemukan.\n", idBuku);
-
-    Buku* buku = head;
-    while (buku != NULL && buku->id != idBuku) {
-        buku = buku->next;
-    }
-
     if (buku == NULL || buku->stok <= 0) {
         printf("Buku tidak tersedia.\n");
-return;
-}
+        return;
+    }
 
-    printf("Masukkan jumlah hari peminjaman: ");
-    scanf("%d", &hariPeminjaman);
-    getchar();
     int hari;
-    printf("Masukkan hari peminjaman: ");
+    printf("Masukkan tanggal peminjaman: ");
     scanf("%d", &hari);
 
-    enqueue(&antreanPeminjaman, idBuku, hariPeminjaman);
-    hapusBuku(idBuku); 
-    printf("Buku dengan ID %d berhasil dipinjam.\n", idBuku);
     pengguna->idPeminjaman = idBuku;
     pengguna->hariPeminjaman = hari;
     buku->stok--; // Kurangi stok buku
@@ -287,50 +221,28 @@ return;
     printf("Buku berhasil dipinjam!\n");
 }
 
-// Fungsi pengembalian buku dengan aturan denda
-void kembalikanBuku() {
-    int idBuku, hariPinjam;
-    printf("Masukkan ID buku yang dikembalikan: ");
-    scanf("%d", &idBuku);
-    getchar();
-// Fungsi untuk mengembalikan buku (User)
+// Fungsi untuk mengembalikan buku (User )
 void kembalikanBuku(Pengguna* pengguna) {
     if (pengguna->idPeminjaman == -1) {
         printf("Anda tidak memiliki buku yang dipinjam.\n");
         return;
     }
 
-    printf("Masukkan jumlah hari peminjaman: ");
-    scanf("%d", &hariPinjam);
-    getchar();
     int hariPengembalian;
-    printf("Masukkan hari pengembalian: ");
+    printf("Masukkan tanggal pengembalian: ");
     scanf("%d", &hariPengembalian);
 
     // Hitung denda jika terlambat
     int keterlambatan = hariPengembalian - pengguna->hariPeminjaman - 7; // Batas peminjaman adalah 7 hari
     int denda = (keterlambatan > 0) ? keterlambatan * DENDA_PER_HARI : 0;
 
-    if (hariPinjam > 7) {
-        int hariTerlambat = hariPinjam - 7;
-        int denda = hariTerlambat * 5000; 
-        printf("Anda terlambat mengembalikan buku selama %d hari.\n", hariTerlambat);
-        printf("Denda yang harus dibayar adalah Rp%d.\n", denda);
     if (denda > 0) {
         printf("Anda terlambat mengembalikan buku selama %d hari. Denda: Rp%d\n", keterlambatan, denda);
-} else {
-printf("Buku dikembalikan tepat waktu. Tidak ada denda.\n");
-}
-
-    StackNode* newNode = (StackNode*)malloc(sizeof(StackNode));
-    newNode->idBuku = idBuku;
-    newNode->next = stackBuku;
-    stackBuku = newNode;
-    Buku* buku = head;
-    while (buku != NULL && buku->id != pengguna->idPeminjaman) {
-        buku = buku->next;
+    } else {
+        printf("Buku dikembalikan tepat waktu. Tidak ada denda.\n");
     }
 
+    Buku* buku = cariBuku(pengguna->idPeminjaman);
     if (buku != NULL) {
         buku->stok++; // Tambah stok buku
     }
@@ -338,196 +250,54 @@ printf("Buku dikembalikan tepat waktu. Tidak ada denda.\n");
     pengguna->idPeminjaman = -1;
     pengguna->hariPeminjaman = 0;
 
-    printf("Buku dengan ID %d berhasil dikembalikan.\n", idBuku);
     printf("Buku berhasil dikembalikan!\n");
 }
 
-// Fungsi untuk menambah elemen ke queue
-void enqueue(Queue* q, int idBuku, int hariPeminjaman) {
-// Fungsi untuk menambah pengguna ke antrean pemesanan buku
-void antrePesanBuku(Queue* antreanPesan, char* namaPengguna, int idBuku) {
-QueueNode* newNode = (QueueNode*)malloc(sizeof(QueueNode));
-newNode->idBuku = idBuku;
-    newNode->hariPeminjaman = hariPeminjaman;
-    strcpy(newNode->namaPengguna, namaPengguna);
-newNode->next = NULL;
-
-    if (q->rear == NULL) {
-        q->front = q->rear = newNode;
-    if (antreanPesan->rear == NULL) {
-        antreanPesan->front = antreanPesan->rear = newNode;
-} else {
-        q->rear->next = newNode;
-        q->rear = newNode;
-        antreanPesan->rear->next = newNode;
-        antreanPesan->rear = newNode;
-}
-
-    printf("Pengguna '%s' telah masuk ke antrean pemesanan untuk buku ID %d.\n", namaPengguna, idBuku);
-}
-
-// Fungsi untuk memproses antrean pemesanan buku (ketika stok tersedia)
-void prosesAntreanPesan(Queue* antreanPesan) {
-    if (antreanPesan->front == NULL) {
-        printf("Tidak ada antrean pemesanan.\n");
-        return;
-    }
-
-    QueueNode* temp = antreanPesan->front;
-    printf("Memproses pesanan untuk pengguna '%s' pada buku ID %d.\n", temp->namaPengguna, temp->idBuku);
-    dequeue(antreanPesan); // Menghapus dari antrean setelah diproses
-}
-
-void tambahkanRiwayat(StackNode** stackRiwayat, int idBuku, char* namaPengguna, char* aktivitas) {
-    StackNode* newNode = (StackNode*)malloc(sizeof(StackNode));
-    newNode->idBuku = idBuku;
-    strcpy(newNode->namaPengguna, namaPengguna);
-    strcpy(newNode->aktivitas, aktivitas);
-    newNode->next = *stackRiwayat;
-    *stackRiwayat = newNode;
-
-    printf("Riwayat '%s' untuk buku ID %d oleh '%s' telah ditambahkan.\n", aktivitas, idBuku, namaPengguna);
-}
-
-// Fungsi menampilkan antrean peminjaman
-void lihatAntreanPeminjaman() {
-    if (antreanPeminjaman.front == NULL) {
-        printf("Antrean peminjaman kosong.\n");
-// Fungsi untuk menampilkan riwayat peminjaman
-void tampilkanRiwayat(StackNode* stackRiwayat) {
-    if (stackRiwayat == NULL) {
-        printf("Tidak ada riwayat peminjaman atau pengembalian.\n");
-return;
-}
-
-    printf("\nAntrean Peminjaman:\n");
-    QueueNode* temp = antreanPeminjaman.front;
-    printf("\nRiwayat Peminjaman/Pengembalian:\n");
-    StackNode* temp = stackRiwayat;
-while (temp != NULL) {
-        printf("ID Buku: %d, Hari Peminjaman: %d\n", temp->idBuku, temp->hariPeminjaman);
-        printf("Buku ID: %d, Pengguna: %s, Aktivitas: %s\n", temp->idBuku, temp->namaPengguna, temp->aktivitas);
-temp = temp->next;
-}
-}
-
-// Fungsi untuk melihat stack buku
-void lihatStackBuku() {
-    if (stackBuku == NULL) {
-        printf("Stack buku kosong.\n");
-
-// Fungsi untuk menambah stok buku
-void tambahStokBuku(Buku* buku, int jumlah) {
-    if (buku == NULL) {
-        printf("Buku tidak ditemukan.\n");
-return;
-}
-    buku->stok += jumlah;
-    printf("Stok buku '%s' berhasil ditambah menjadi %d.\n", buku->judul, buku->stok);
-}
-
-    printf("\nStack Buku:\n");
-    StackNode* temp = stackBuku;
-// Fungsi untuk mengurangi stok buku
-void kurangiStokBuku(Buku* buku, int jumlah) {
-    if (buku == NULL) {
-        printf("Buku tidak ditemukan.\n");
-        return;
-    }
-
-    if (buku->stok < jumlah) {
-        printf("Stok buku '%s' tidak mencukupi untuk pengurangan.\n", buku->judul);
-        return;
-    }
-
-    buku->stok -= jumlah;
-    printf("Stok buku '%s' berhasil dikurangi menjadi %d.\n", buku->judul, buku->stok);
-}
-
-// Fungsi untuk menampilkan stok buku
-void tampilkanStokBuku(Buku* head) {
-    if (head == NULL) {
-        printf("Tidak ada buku dalam perpustakaan.\n");
-        return;
-    }
-
-    printf("\nDaftar Stok Buku:\n");
-    Buku* temp = head;
-while (temp != NULL) {
-        printf("ID Buku: %d\n", temp->idBuku);
-        printf("ID: %d, Judul: %s, Pengarang: %s, Stok: %d\n", temp->id, temp->judul, temp->pengarang, temp->stok);
-temp = temp->next;
-}
-}
-
-// Fungsi untuk menampilkan menu admin
-//// Fungsi untuk menampilkan daftar pengguna yang meminjam buku
-//void lihatPeminjam() {
-//    printf("\n=== Daftar Pengguna yang Meminjam Buku ===\n");
-//
-//    QueueNode* temp = antreanPeminjaman.front;
-//    if (temp == NULL) {
-//        printf("Tidak ada buku yang sedang dipinjam.\n");
-//        return;
-//    }
-//
-//    while (temp != NULL) {
-//        Buku* buku = cariBuku(temp->idBuku);
-//        printf("ID Buku: %d, Hari Peminjaman: %d\n", temp->idBuku, temp->hariPeminjaman);
-//        temp = temp->next;
-//    }
-//}
-
 // Fungsi untuk menampilkan menu Admin
 void menuAdmin() {
-int pilihan;
-do {
-printf("\n=== Menu Admin ===\n");
-printf("1. Tambah Buku\n");
-printf("2. Tampilkan Buku\n");
-printf("3. Hapus Buku\n");
-        printf("4. Lihat Antrean Peminjaman\n");
-        printf("5. Lihat Stack Buku\n");
-        printf("6. Keluar\n");
+    int pilihan;
+    do {
+        printf("\n=== Menu Admin ===\n");
+        printf("1. Tambah Buku\n");
+        printf("2. Tampilkan Buku\n");
+        printf("3. Hapus Buku\n");
         printf("4. Tambah Stok Buku\n");
         printf("5. Kurangi Stok Buku\n");
         printf("6. Tampilkan Stok Buku\n");
-//        printf("7. Lihat Antrean Pemesanan Buku\n");
-//        printf("8. Proses Antrean Pemesanan\n");
-//        printf("9. Tampilkan Riwayat Peminjaman/Pengembalian\n");
-        printf("10. Keluar\n");
-printf("Pilih menu: ");
-scanf("%d", &pilihan);
+        printf("7. Lihat Daftar Peminjam Buku\n");
+        printf("8. Keluar\n");
+        printf("Pilih menu: ");
+        scanf("%d", &pilihan);
 
-        switch (pilihan){
         switch (pilihan) {
-case 1:
-tambahBuku();
-break;
-@@ -242,24 +421,67 @@ void menuAdmin() {
-printf("Masukkan ID buku yang akan dihapus: ");
-scanf("%d", &id);
-hapusBuku(id);
-                printf("Buku berhasil dihapus\n");
+            case 1:
+                tambahBuku();
+                break;
+            case 2:
+                tampilkanBuku();
+                break;
+            case 3: {
+                int id;
+                printf("Masukkan ID buku yang akan dihapus: ");
+                scanf("%d", &id);
+                hapusBuku(id);
                 printf("Buku berhasil dihapus jika ditemukan!\n");
-break;
-}
-            case 4:
-                lihatAntreanPeminjaman();
+                break;
+            }
             case 4: {
                 int id, jumlah;
                 printf("Masukkan ID buku yang akan ditambah stoknya: ");
                 scanf("%d", &id);
                 printf("Masukkan jumlah stok yang ingin ditambah: ");
                 scanf("%d", &jumlah);
-                Buku* buku = head;
-                while (buku != NULL && buku->id != id) {
-                    buku = buku->next;
+                Buku* buku = cariBuku(id);
+                if (buku != NULL) {
+                    buku->stok += jumlah; // Tambah stok buku
+                    printf("Stok buku berhasil ditambahkan!\n");
+                } else {
+                    printf("Buku tidak ditemukan.\n");
                 }
-                tambahStokBuku(buku, jumlah);
-break;
-            case 5:
-                lihatStackBuku();
+                break;
             }
             case 5: {
                 int id, jumlah;
@@ -535,65 +305,62 @@ break;
                 scanf("%d", &id);
                 printf("Masukkan jumlah stok yang ingin dikurangi: ");
                 scanf("%d", &jumlah);
-                Buku* buku = head;
-                while (buku != NULL && buku->id != id) {
-                    buku = buku->next;
+                Buku* buku = cariBuku(id);
+                if (buku != NULL) {
+                    if (buku->stok >= jumlah) {
+                        buku->stok -= jumlah; // Kurangi stok buku
+                        printf("Stok buku berhasil dikurangi!\n");
+                    } else {
+                        printf("Stok buku tidak cukup untuk dikurangi.\n");
+                    }
+                } else {
+                    printf("Buku tidak ditemukan.\n");
                 }
-                kurangiStokBuku(buku, jumlah);
-break;
-            }
-case 6:
-                tampilkanStokBuku(head);
                 break;
-//            case 7:
-//                if (antreanPeminjaman.front == NULL) {
-//                    printf("Tidak ada antrean pemesanan.\n");
-//                } else {
-//                    QueueNode* temp = antreanPeminjaman.front;
-//                    printf("\nAntrean Pemesanan Buku:\n");
-//                    while (temp != NULL) {
-//                        printf("Pengguna: %s, ID Buku: %d\n", temp->namaPengguna, temp->idBuku);
-//                        temp = temp->next;
-//                    }
-//                }
-//                break;
-//            case 8:
-//                prosesAntreanPesan(&antreanPeminjaman);
-//                break;
-//            case 9:
-//                tampilkanRiwayat(stackBuku);
-//                break;
-            case 10:
-printf("Keluar dari menu Admin.\n");
-break;
-default:
-printf("Pilihan tidak valid.\n");
+            }
+            case 6:
+                tampilkanBuku();
+                break;
+            case 7:
+                lihatPeminjam();
+                break;
+            case 8:
+                printf("Keluar dari menu Admin.\n");
+                break;
+            default:
+                printf("Pilihan tidak valid.\n");
+        }
+    } while (pilihan != 8);
 }
-    } while (pilihan != 6);
-    } while (pilihan != 10);
-}
-
 
 // Fungsi untuk menampilkan menu User
-void menuUser(Pengguna* pengguna) {
-int pilihan;
-do {
-@@ -271,8 +493,8 @@ void menuUser(Pengguna* pengguna) {
-printf("Pilih menu: ");
-scanf("%d", &pilihan);
+void menuUser (Pengguna* pengguna) {
+    int pilihan;
+    do {
+        printf("\n=== Menu User ===\n");
+        printf("1. Pinjam Buku\n");
+        printf("2. Kembalikan Buku\n");
+        printf("3. Tampilkan Buku\n");
+        printf("4. Keluar\n");
+        printf("Pilih menu: ");
+        scanf("%d", &pilihan);
 
-    switch (pilihan) {
-        case 1:
         switch (pilihan) {
             case 1:
-pinjamBuku(pengguna);
-break;
-case 2:
-@@ -287,18 +509,46 @@ void menuUser(Pengguna* pengguna) {
-default:
-printf("Pilihan tidak valid.\n");
-}
-    } while (pilihan !=4);
+                pinjamBuku(pengguna);
+                break;
+            case 2:
+                kembalikanBuku(pengguna);
+                break;
+            case 3:
+                tampilkanBuku();
+                break;
+            case 4:
+                printf("Keluar dari menu User.\n");
+                break;
+            default:
+                printf("Pilihan tidak valid.\n");
+        }
     } while (pilihan != 4);
 }
 
@@ -603,66 +370,93 @@ void tambahBukuDefault() {
     buku1->id = 1;
     strcpy(buku1->judul, "Pemrograman C");
     strcpy(buku1->pengarang, "Budi Raharjo");
-    buku1->stok = 5;
+        buku1->stok = 5;
     buku1->next = NULL;
     head = buku1;
 
     Buku* buku2 = (Buku*)malloc(sizeof(Buku));
     buku2->id = 2;
     strcpy(buku2->judul, "Algoritma dan Struktur Data");
-    strcpy(buku2->pengarang, "Rinaldi Munir");
+    strcpy(buku2->pengarang, "Andi Setiawan");
     buku2->stok = 3;
     buku2->next = NULL;
-    buku1->next = buku2;
-
-    Buku* buku3 = (Buku*)malloc(sizeof(Buku));
-    buku3->id = 3;
-    strcpy(buku3->judul, "Jaringan Komputer");
-    strcpy(buku3->pengarang, "Andrew S. Tanenbaum");
-    buku3->stok = 4;
-    buku3->next = NULL;
-    buku2->next = buku3;
-
-    printf("Buku default berhasil ditambahkan ke sistem!\n");
+    buku1->next = buku2; // Link the first book to the second book
 }
 
-int main() {
-Pengguna pengguna = {"", -1, 0};
-int pilihan;
+// Fungsi untuk membebaskan memori yang dialokasikan
+void freeMemory() {
+    // Bebaskan semua buku
+    Buku* tempBuku;
+    while (head != NULL) {
+        tempBuku = head;
+        head = head->next;
+        free(tempBuku);
+    }
 
-    printf("Selamar datang di sistem perpustakaan!\n");
-    printf("Masukkan nama anda: ");
-    getchar();
-    fgets(pengguna.nama, 100, stdin);
-    pengguna.nama[strcspn(pengguna.nama, "\n")] = '\0';
-    // Tambahkan buku default ke sistem perpustakaan
+    // Bebaskan semua pengguna
+    Pengguna* tempPengguna;
+    while (penggunaHead != NULL) {
+        tempPengguna = penggunaHead;
+        penggunaHead = penggunaHead->next;
+        free(tempPengguna);
+    }
+}
+
+// Fungsi utama
+int main() {
+    // Inisialisasi sistem dengan buku default
     tambahBukuDefault();
 
-    printf("Selamat datang di Sistem Perpustakaan!\n");
+    // Menu utama
+    int pilihan;
+    do {
+        printf("\n=== Menu Utama ===\n");
+        printf("1. Masuk sebagai Admin\n");
+        printf("2. Masuk sebagai User\n");
+        printf("3. Keluar\n");
+        printf("Pilih menu: ");
+        scanf("%d", &pilihan);
 
-do {
-printf("\n=== Menu Utama ===\n");
-@@ -312,15 +562,22 @@ int main() {
-case 1:
-menuAdmin();
-break;
-            case 2:
-            case 2: {
-                printf("Masukkan nama Anda: ");
-                getchar();
-                fgets(pengguna.nama, 100, stdin);
-                pengguna.nama[strcspn(pengguna.nama, "\n")] = '\0';
-menuUser(&pengguna);
-break;
+        switch (pilihan) {
+            case 1: {
+                // Login sebagai admin
+                menuAdmin();
+                break;
             }
-case 3:
-printf("Keluar dari sistem. Terima kasih!\n");
-break;
-default:
-printf("Pilihan tidak valid.\n");
-}
-} while (pilihan != 3);
-return 0;
+            case 2: {
+                // Login sebagai user
+                char nama[100];
+                printf("Masukkan nama pengguna: ");
+                getchar(); // Menghapus newline dari input sebelumnya
+                fgets(nama, sizeof(nama), stdin);
+                nama[strcspn(nama, "\n")] = '\0'; // Menghapus newline
+
+                // Tambahkan pengguna baru
+                tambahPengguna(nama);
+
+                // Ambil pointer ke pengguna yang baru ditambahkan
+                Pengguna* pengguna = penggunaHead;
+                while (pengguna != NULL && strcmp(pengguna->nama, nama) != 0) {
+                    pengguna = pengguna->next;
+                }
+
+                if (pengguna != NULL) {
+                    menuUser (pengguna);
+                } else {
+                    printf("Pengguna tidak ditemukan.\n");
+                }
+                break;
+            }
+            case 3:
+                printf("Keluar dari sistem.\n");
+                break;
+            default:
+                printf("Pilihan tidak valid.\n");
+        }
+    } while (pilihan != 3);
+
+    // Bebaskan memori sebelum keluar
+    freeMemory();
 
     return 0;
 }
